@@ -1,0 +1,51 @@
+# Searches run against LinkedIn/Indeed/Google (via JobSpy) and GetOnBoard.
+search_terms:
+  - junior software developer
+  - python developer intern
+  - data science intern
+  - junior data analyst
+  - QA automation junior
+  - AI trainee
+  - pasante desarrollo
+  - trainee sistemas
+
+# LinkedIn rate-limits hard: few searches, combined with OR.
+linkedin_terms:
+  - (intern OR trainee OR junior OR pasante) AND (developer OR software OR python OR backend OR desarrollador)
+  - (intern OR trainee OR junior OR pasante) AND (data OR "machine learning" OR AI OR QA OR automation OR datos)
+
+# Company career boards (public APIs, no rate limits). Add any company that uses these platforms.
+boards:
+  # Companies with Argentina/LATAM offices, or remote-first ones that hire globally.
+  greenhouse: [gitlab, remote, automatticcareers, wizeline, nubank, vtex, cabify, clara]
+  lever: [despegar, dlocal, kavak, lemon]
+  ashby: [deel, belvo, mural]
+
+hours_old: 24
+results_per_search: 25
+
+# Title must match one of these, and none of the excludes (case-insensitive regex).
+title_include: 'intern\b|internship|trainee|junior|\bjr\b|pasant|entry|becari|practicante|graduate'
+title_exclude: 'senior|\bsr\b|lead|staff|manager|principal|head|director|architect'
+
+# Non-remote jobs must have one of these in their location.
+onsite_locations: 'buenos aires|caba|capital federal|ciudad aut|vicente l[oó]pez|escobar'
+
+min_fit_score: 6
+max_jobs_per_day: 15
+
+# CV header lives in contact.yaml (private, not committed; CONTACT secret on GitHub).
+
+# Fixed sections (same on every CV), per language.
+education:
+  en:
+    - {degree: "B.Sc. in Computer Science", school: "Universidad de Buenos Aires", dates: "2022 – 2027", note: "Intermediate degree obtained · 70% of program completed"}
+    - {degree: "Data Science Program", school: "Digital House", dates: "2021", note: "8-month intensive course"}
+    - {degree: "Security 101 Bootcamp", school: "1-week intensive", dates: "", note: "Networking, TLS/SSL, exploitation of HTTP, DNS, SMTP, DHCP and Wi-Fi"}
+  es:
+    - {degree: "Licenciatura en Ciencias de la Computación", school: "Universidad de Buenos Aires", dates: "2022 – 2027", note: "Título intermedio obtenido · 70% de la carrera aprobada"}
+    - {degree: "Programa de Data Science", school: "Digital House", dates: "2021", note: "Curso intensivo de 8 meses"}
+    - {degree: "Bootcamp Security 101", school: "Intensivo de 1 semana", dates: "", note: "Redes, TLS/SSL, explotación de HTTP, DNS, SMTP, DHCP y Wi-Fi"}
+languages:
+  en: "English (C2) · Spanish (native)"
+  es: "Inglés (C2) · Español (nativo)"

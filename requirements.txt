@@ -1,0 +1,4 @@
+python-jobspy
+requests
+pyyaml
+jinja2

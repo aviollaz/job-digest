@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<title>{{ name }} CV</title>
+<style>
+  @page { size: A4; margin: 12mm 14mm; }
+  body { font-family: "Segoe UI", Calibri, Carlito, Arial, "Liberation Sans", sans-serif; font-size: 10pt; line-height: 1.28; color: #1a1a1a; margin: 0; }
+  h1 { font-size: 20pt; margin: 0; letter-spacing: .5px; }
+  .headline { font-size: 11pt; color: #335; margin: 2px 0 4px; }
+  .contact { font-size: 9pt; color: #444; }
+  .contact a { color: #444; text-decoration: none; }
+  h2 { font-size: 10.5pt; text-transform: uppercase; letter-spacing: 1px; color: #224; border-bottom: 1px solid #99a; margin: 12px 0 5px; padding-bottom: 2px; }
+  .row { display: flex; justify-content: space-between; font-weight: 600; }
+  .row span:last-child { font-weight: 400; color: #555; white-space: nowrap; }
+  .sub { color: #555; font-style: italic; }
+  ul { margin: 2px 0 7px 16px; padding: 0; }
+  li { margin-bottom: 1px; }
+  p { margin: 0 0 4px; }
+</style>
+</head>
+<body>
+  <h1>{{ name }}</h1>
+  <div class="headline">{{ headline }}</div>
+  <div class="contact">
+    {{ location }} · {{ phone }} · <a href="mailto:{{ email }}">{{ email }}</a> ·
+    <a href="https://{{ linkedin }}">{{ linkedin }}</a> · <a href="https://{{ github }}">{{ github }}</a>
+  </div>
+
+  <h2>{{ labels.summary }}</h2>
+  <p>{{ summary }}</p>
+
+  <h2>{{ labels.experience }}</h2>
+  {% for e in experience %}
+  <div class="row"><span>{{ e.title }} — {{ e.org }}</span><span>{{ e.dates }}</span></div>
+  <ul>{% for b in e.bullets %}<li>{{ b }}</li>{% endfor %}</ul>
+  {% endfor %}
+
+  <h2>{{ labels.projects }}</h2>
+  {% for p in projects %}
+  <div class="row"><span>{{ p.name }}</span></div>
+  <div class="sub">{{ p.tech }}</div>
+  <ul>{% for b in p.bullets %}<li>{{ b }}</li>{% endfor %}</ul>
+  {% endfor %}
+
+  <h2>{{ labels.education }}</h2>
+  {% for ed in education %}
+  <div class="row"><span>{{ ed.degree }} — {{ ed.school }}</span><span>{{ ed.dates }}</span></div>
+  <div class="sub">{{ ed.note }}</div>
+  {% endfor %}
+
+  <h2>{{ labels.skills }}</h2>
+  {% for s in skills %}<p><b>{{ s.category }}:</b> {{ s['items'] }}</p>{% endfor %}
+  <p><b>{{ labels.languages }}:</b> {{ languages }}</p>
+</body>
+</html>
