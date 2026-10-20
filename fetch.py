@@ -45,13 +45,14 @@ def jobspy_jobs():
 def getonbrd_jobs():
     jobs, companies = [], {}
     cutoff = time.time() - CFG["hours_old"] * 3600
-    for term in CFG["search_terms"]:
-        data = requests.get("https://www.getonbrd.com/api/v0/search/jobs",
-                            params={"query": term, "per_page": 50}, timeout=30).json()["data"]
+    for cat in CFG["getonbrd_categories"]:
+        data = requests.get(f"https://www.getonbrd.com/api/v0/categories/{cat}/jobs",
+                            params={"per_page": 100}, timeout=30).json()["data"]
         for j in data:
             a = j["attributes"]
             remote = a["remote_modality"] == "fully_remote"
-            if a["published_at"] < cutoff or not (remote or "Argentina" in a["countries"]):
+            junior = a["seniority"]["data"]["id"] in (1, 2)  # no experience / junior
+            if a["published_at"] < cutoff or not junior or not (remote or "Argentina" in a["countries"]):
                 continue
             cid = a["company"]["data"]["id"]
             if cid not in companies:
@@ -62,6 +63,7 @@ def getonbrd_jobs():
                 "location": ", ".join(a["countries"]) or "Remote", "remote": remote,
                 "posted": time.strftime("%Y-%m-%d", time.localtime(a["published_at"])), "source": "getonbrd",
                 "description": strip_html("\n".join(a[k] or "" for k in ("description", "functions", "desirable"))),
+                "junior": True,
             })
     return jobs
 
@@ -103,7 +105,7 @@ def main():
     keep, keys = [], set()
     for j in board_jobs() + getonbrd_jobs() + jobspy_jobs():
         key = (j["title"].lower().strip(), j["company"].lower().strip())
-        if (j["url"] in seen or "|".join(key) in seen or key in keys or not inc.search(j["title"]) or exc.search(j["title"])
+        if (j["url"] in seen or "|".join(key) in seen or key in keys or not (j.get("junior") or inc.search(j["title"])) or exc.search(j["title"])
                 or not (j["remote"] or onsite.search(j["location"]))):
             continue
         keys.add(key)

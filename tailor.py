@@ -29,7 +29,7 @@ fit_score 0-10: seniority (intern/junior), skills, location/remote. Be honest.
 The candidate lives in Buenos Aires, Argentina: score 2 or less if the job requires living or working
 in another country (including "remote" roles restricted to another country).
 Reply with ONLY a JSON object, no prose, no code fences:
-{{"fit_score": int, "why": "one sentence, in English", "lang": "language of the job posting: en|es"}}
+{{"fit_score": int, "why": "one short sentence, max 20 words, in English", "lang": "language of the job posting: en|es"}}
 
 === CANDIDATE PROFILE ===
 {profile}
@@ -138,7 +138,7 @@ def main():
 
     results.sort(key=lambda j: -j["score"])
     rows = []
-    for j in results:
+    for j in [j for j in results if j["score"] >= CFG["min_show_score"]]:
         where = "Remote" if j["remote"] else esc(j["location"])
         cv = f'<a href="{j["pdf"].name}">CV</a>' if j["pdf"] else "low fit"
         rows.append(f'<tr><td>{j["score"]}</td><td><a href="{esc(j["url"])}">{esc(j["title"])}</a><br>'
@@ -148,7 +148,8 @@ def main():
         f'<!doctype html><meta charset="utf-8"><title>Jobs {out_dir.name}</title>'
         '<style>body{font-family:Segoe UI,sans-serif;margin:24px}td{padding:8px;border-bottom:1px solid #ddd;'
         'vertical-align:top}small{color:#666}</style>'
-        f'<h1>Jobs {out_dir.name}</h1><table>{"".join(rows)}</table>', encoding="utf-8")
+        f'<h1>Jobs {out_dir.name}</h1><p>{len(results)} new jobs scored, {len(rows)} shown (score ≥ '
+        f'{CFG["min_show_score"]}).</p><table>{"".join(rows)}</table>', encoding="utf-8")
     print(f"digest -> {out_dir / 'digest.html'}")
 
 
