@@ -30,7 +30,7 @@ boards:
   lever: [despegar, dlocal, kavak, lemon]
   ashby: [deel, belvo, mural]
 
-hours_old: 24
+hours_old: 72  # covers weekends (runs are weekdays only); seen.json prevents repeats
 results_per_search: 50
 
 # Title must match one of these, and none of the excludes (case-insensitive regex).
