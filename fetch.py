@@ -103,7 +103,7 @@ def main():
     keep, keys = [], set()
     for j in board_jobs() + getonbrd_jobs() + jobspy_jobs():
         key = (j["title"].lower().strip(), j["company"].lower().strip())
-        if (j["url"] in seen or key in keys or not inc.search(j["title"]) or exc.search(j["title"])
+        if (j["url"] in seen or "|".join(key) in seen or key in keys or not inc.search(j["title"]) or exc.search(j["title"])
                 or not (j["remote"] or onsite.search(j["location"]))):
             continue
         keys.add(key)

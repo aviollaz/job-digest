@@ -133,7 +133,7 @@ def main():
             print(f"  failed: {e}")
             continue
         results.append(job)
-        seen.append(job["url"])
+        seen += [job["url"], f"{job['title'].lower().strip()}|{job['company'].lower().strip()}"]
         seen_path.write_text(json.dumps(seen))
 
     results.sort(key=lambda j: -j["score"])
