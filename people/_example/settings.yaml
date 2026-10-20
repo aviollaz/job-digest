@@ -1,0 +1,37 @@
+contact: {name: "Lucía Fernández", location: "Palermo, CABA, Argentina", phone: "+54 9 11 1234-5678", email: "lucia.fernandez.example@gmail.com", linkedin: "linkedin.com/in/lucia-fernandez-example", github: ""}
+email_to: "lucia.fernandez.example@gmail.com"
+field: "accounting / auditing / taxes"
+home: "Buenos Aires, Argentina"
+search_location: "Buenos Aires, Argentina"
+country: "argentina"
+search_terms:
+  - "analista contable junior"
+  - "asistente contable"
+  - "auditoría trainee"
+  - "auditor junior"
+  - "impuestos junior"
+  - "analista impositivo junior"
+  - "administrativo contable"
+  - "analista administrativo junior"
+  - "analista finanzas junior"
+  - "junior accountant"
+  - "junior tax analyst"
+  - "junior auditor"
+  - "pasante contable"
+  - "analista de cuentas a pagar"
+linkedin_terms:
+  - "(junior OR trainee OR pasante OR asistente) AND (contable OR contabilidad OR accountant OR accounting)"
+  - "(junior OR trainee OR pasante OR semi) AND (auditor OR auditoría OR impuestos OR impositivo OR tax OR finanzas)"
+getonbrd_categories: []
+boards: {greenhouse: [], lever: [], ashby: []}
+title_include: [junior, jr, trainee, pasant, asistente, analista, auxiliar, administrativ, contab, accountant, accounting, audit, impuesto, impositiv, tax, financ, tesorer, cuentas a pagar]
+title_exclude: [senior, sr, ssr, semi senior, lead, líder, manager, gerente, jefe, director, head, coordinador, supervisor, venta, vendedor, comercial, sales, atención al cliente, customer, call center, recursos humanos, rrhh, hr, recruiter, reclutador, selección, desarrollador, developer, ingeniero, marketing]
+onsite_locations: [buenos aires, caba, capital federal, ciudad autónoma de buenos aires, palermo]
+education:
+  en:
+    - {degree: "Public Accountant (Contador Público)", school: "Universidad de Buenos Aires", dates: "2021 – 2026", note: "4 courses remaining"}
+    - {degree: "Advanced Excel course (pivot tables, VLOOKUP, basic macros)", school: "Coderhouse", dates: "2023", note: ""}
+  es:
+    - {degree: "Contador Público", school: "Universidad de Buenos Aires", dates: "2021 – 2026", note: "Me faltan 4 materias"}
+    - {degree: "Curso de Excel avanzado (tablas dinámicas, BUSCARV, macros básicas)", school: "Coderhouse", dates: "2023", note: ""}
+languages: {en: "Spanish (native) · English (B2)", es: "Español (nativo) · Inglés (B2)"}

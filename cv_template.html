@@ -23,8 +23,9 @@
   <h1>{{ name }}</h1>
   <div class="headline">{{ headline }}</div>
   <div class="contact">
-    {{ location }} · {{ phone }} · <a href="mailto:{{ email }}">{{ email }}</a> ·
-    <a href="https://{{ linkedin }}">{{ linkedin }}</a> · <a href="https://{{ github }}">{{ github }}</a>
+    {{ location }} · {{ phone }} · <a href="mailto:{{ email }}">{{ email }}</a>
+    {% if linkedin %} · <a href="https://{{ linkedin }}">{{ linkedin }}</a>{% endif %}
+    {% if github %} · <a href="https://{{ github }}">{{ github }}</a>{% endif %}
   </div>
 
   <h2>{{ labels.summary }}</h2>
@@ -36,12 +37,14 @@
   <ul>{% for b in e.bullets %}<li>{{ b }}</li>{% endfor %}</ul>
   {% endfor %}
 
+  {% if projects %}
   <h2>{{ labels.projects }}</h2>
   {% for p in projects %}
   <div class="row"><span>{{ p.name }}</span></div>
   <div class="sub">{{ p.tech }}</div>
   <ul>{% for b in p.bullets %}<li>{{ b }}</li>{% endfor %}</ul>
   {% endfor %}
+  {% endif %}
 
   <h2>{{ labels.education }}</h2>
   {% for ed in education %}

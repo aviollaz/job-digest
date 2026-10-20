@@ -1,7 +1,14 @@
 out/
 samples/
-new_jobs.json
 run.log
 __pycache__/
-MyInfo.md
-contact.yaml
+# Private per-person files (stored as GitHub secrets instead)
+people/*/profile.md
+people/*/searching.md
+people/*/settings.yaml
+people/*/new_jobs.json
+# The example person is fake and committed as a template
+!people/_example/profile.md
+!people/_example/searching.md
+!people/_example/settings.yaml
+people/_example/seen.json
