@@ -26,6 +26,7 @@ jobs:
           python-version: "3.13"
       - name: Write private files from secrets
         run: |
+          mkdir -p "people/$P"
           printf '%s' "$PROFILE" > "people/$P/profile.md"
           printf '%s' "$SETTINGS" > "people/$P/settings.yaml"
         env:
@@ -48,6 +49,7 @@ jobs:
         run: |
           git config user.name "job-digest-bot"
           git config user.email "actions@github.com"
+          [ -f "people/$P/seen.json" ] || exit 0  # nothing scored yet
           git add "people/$P/seen.json"
           git commit -m "Update seen jobs ($P)" || true
           git pull --rebase
