@@ -16,7 +16,7 @@ jobs:
       max-parallel: 1  # one person at a time: fewer LinkedIn blocks, no seen.json push conflicts
       fail-fast: false
       matrix:
-        person: [andre]  # add a name here after `python setup.py <name> --upload`
+        person: [andre, mica]  # add a name here after `python setup.py <name> --upload`
     env:
       P: ${{ matrix.person }}
     steps:
