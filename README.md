@@ -9,6 +9,35 @@ Every weekday at ~08:00 (Argentina), GitHub Actions runs this for each person:
 5. **Email** the person a digest with links, scores, reasons and the CVs attached (`email_digest.py`).
    Jobs below 4 are left out.
 
+```mermaid
+flowchart LR
+    C([Cron · weekdays 08:00]) --> F[fetch.py<br/>LinkedIn · Indeed · GetOnBoard<br/>Greenhouse · Lever · Ashby]
+    F --> X[Filter<br/>title, location,<br/>already seen]
+    X --> S[Score 0–10<br/>Claude Haiku]
+    S -- "≥ 6" --> CV[Tailored CV<br/>Claude Sonnet → HTML → PDF]
+    S -- "4–5" --> D
+    CV --> D[Digest email<br/>Gmail SMTP]
+    X -. "seen.json committed back" .-> R[(repo)]
+    P[(GitHub secrets<br/>profile + settings)] -. recreated each run .-> F
+```
+
+Running every weekday for 2 people; about 870 postings screened so far.
+
+### What arrives
+
+Example with the repo's fake person (`people/_example/`) and made-up postings:
+
+<table>
+<tr>
+<td width="50%"><img src="docs/digest_ejemplo.png" alt="Example digest email: four job postings ranked by fit score, each with a one-line reason and a link to its tailored CV"></td>
+<td width="50%"><img src="docs/cv_ejemplo.png" alt="Example tailored one-page CV in Spanish for a junior accounting role"></td>
+</tr>
+<tr>
+<td><sub>The daily digest: postings ranked by fit, with the reason in one line.</sub></td>
+<td><sub>A tailored CV: rewritten for the posting, every fact taken from the profile.</sub></td>
+</tr>
+</table>
+
 ## Files
 
 ```
