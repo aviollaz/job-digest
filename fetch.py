@@ -13,6 +13,29 @@ import person
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36"}
 
 
+def get_json(url, tries=3, **kw):
+    """GET a JSON API; retry on network errors, non-2xx or non-JSON bodies (rate limits, Cloudflare pages)."""
+    for i in range(tries):
+        try:
+            r = requests.get(url, timeout=30, **kw)
+            r.raise_for_status()
+            return r.json()
+        except (requests.RequestException, ValueError) as e:
+            if i == tries - 1:
+                raise
+            print(f"retrying {url} ({e})")
+            time.sleep(5 * (i + 1))
+
+
+def safe(source, cfg):
+    """Run one job source; if it fails, log it and keep going with the others."""
+    try:
+        return source(cfg)
+    except Exception as e:
+        print(f"{source.__name__} failed, skipping: {e!r}")
+        return []
+
+
 def strip_html(s):
     s = re.sub(r"<(br|/p|/li|/h\d)[^>]*>", "\n", s or "")
     return html.unescape(re.sub(r"<[^>]+>", "", s)).strip()
@@ -45,8 +68,12 @@ def getonbrd_jobs(cfg):
     jobs, companies = [], {}
     cutoff = time.time() - cfg["hours_old"] * 3600
     for cat in cfg.get("getonbrd_categories") or []:
-        data = requests.get(f"https://www.getonbrd.com/api/v0/categories/{cat}/jobs",
-                            params={"per_page": 100}, timeout=30).json()["data"]
+        try:
+            data = get_json(f"https://www.getonbrd.com/api/v0/categories/{cat}/jobs",
+                            params={"per_page": 100}, headers=UA)["data"]
+        except Exception as e:
+            print(f"getonbrd failed for {cat!r}, skipping: {e!r}")
+            continue
         for j in data:
             a = j["attributes"]
             remote = a["remote_modality"] == "fully_remote"
@@ -55,8 +82,11 @@ def getonbrd_jobs(cfg):
                 continue
             cid = a["company"]["data"]["id"]
             if cid not in companies:
-                companies[cid] = requests.get(f"https://www.getonbrd.com/api/v0/companies/{cid}",
-                                              timeout=30).json()["data"]["attributes"]["name"]
+                try:
+                    companies[cid] = get_json(f"https://www.getonbrd.com/api/v0/companies/{cid}",
+                                              headers=UA)["data"]["attributes"]["name"]
+                except Exception:
+                    companies[cid] = a["company"]["data"].get("attributes", {}).get("name") or "Unknown"
             jobs.append({
                 "url": j["links"]["public_url"], "title": a["title"], "company": companies[cid],
                 "location": ", ".join(a["countries"]) or "Remote", "remote": remote,
@@ -76,15 +106,15 @@ def board_jobs(cfg):
                          posted=posted, source=source, description=description))
 
     for co in b.get("greenhouse") or []:
-        for j in requests.get(f"https://boards-api.greenhouse.io/v1/boards/{co}/jobs?content=true", timeout=30).json()["jobs"]:
+        for j in get_json(f"https://boards-api.greenhouse.io/v1/boards/{co}/jobs?content=true")["jobs"]:
             add(j["absolute_url"], j["title"], j.get("company_name") or co, j["location"]["name"], False,
                 j["updated_at"][:10], "greenhouse", strip_html(html.unescape(j["content"])))
     for co in b.get("lever") or []:
-        for j in requests.get(f"https://api.lever.co/v0/postings/{co}?mode=json", timeout=30).json():
+        for j in get_json(f"https://api.lever.co/v0/postings/{co}?mode=json"):
             add(j["hostedUrl"], j["text"], co, j["categories"].get("location", ""), j.get("workplaceType") == "remote",
                 time.strftime("%Y-%m-%d", time.localtime(j["createdAt"] / 1000)), "lever", j["descriptionPlain"])
     for co in b.get("ashby") or []:
-        for j in requests.get(f"https://api.ashbyhq.com/posting-api/job-board/{co}", timeout=30).json()["jobs"]:
+        for j in get_json(f"https://api.ashbyhq.com/posting-api/job-board/{co}")["jobs"]:
             add(j["jobUrl"], j["title"], co, j["location"], j["isRemote"], j["publishedAt"][:10], "ashby",
                 j["descriptionPlain"])
     return jobs
@@ -104,7 +134,7 @@ def main(name):
     onsite = person.words_pattern(cfg["onsite_locations"])
 
     keep, keys = [], set()
-    for j in board_jobs(cfg) + getonbrd_jobs(cfg) + jobspy_jobs(cfg):
+    for j in safe(board_jobs, cfg) + safe(getonbrd_jobs, cfg) + safe(jobspy_jobs, cfg):
         key = (j["title"].lower().strip(), j["company"].lower().strip())
         if (j["url"] in seen or "|".join(key) in seen or key in keys or not (j.get("junior") or inc.search(j["title"]))
                 or exc.search(j["title"]) or not (j["remote"] or onsite.search(j["location"]))):
@@ -114,7 +144,10 @@ def main(name):
 
     for j in keep:
         if not j["description"] and j["source"] == "linkedin":
-            j["description"] = linkedin_description(j["url"])
+            try:
+                j["description"] = linkedin_description(j["url"])
+            except requests.RequestException as e:
+                print(f"linkedin description failed for {j['url']}: {e}")
             time.sleep(2)
 
     keep = keep[:cfg["max_jobs_per_day"]]
